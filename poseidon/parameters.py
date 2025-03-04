@@ -1,4 +1,5 @@
 from .hash import Poseidon, OptimizedPoseidon, HashType
+from .parameters_circom import circom_c, circom_m
 
 import numpy
 
@@ -26,6 +27,24 @@ def case_neptune():
                                  rc_list=round_constants_neptune, mds_matrix=matrix_neptune)
     return poseidon, t
 
+def case_circom(input_rate: int):
+    assert 0 < input_rate <= 6, "input_rate must be between 0 and 6"
+
+    security_level = 128
+    t = input_rate + 1
+    partial_rounds = [56, 57, 56, 60, 60, 63, 64, 63];
+    full_round = 8
+    partial_round = partial_rounds[t - 2]
+    alpha = 5
+    c = circom_c[t-2]
+    m = circom_m[t-2]
+    prime = prime_254
+
+    poseidon = Poseidon(prime, security_level, alpha, input_rate, t, full_round=full_round,
+                partial_round=partial_round, rc_list=c, mds_matrix=m, ret_state_index=0,
+                pad_input_left=True)
+
+    return poseidon, t
 
 prime_64 = 0xfffffffffffffeff
 prime_254 = 0x30644e72e131a029b85045b68181585d2833e84879b9709143e1f593f0000001
