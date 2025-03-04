@@ -17,7 +17,8 @@ class HashType(enum.Enum):
 class Poseidon:
     def __init__(self, p, security_level, alpha, input_rate, t, full_round: Optional[int] = None,
                  partial_round: Optional[int] = None, mds_matrix: Optional[list] = None,
-                 rc_list: Optional[list] = None, prime_bit_len: Optional[int] = None):
+                 rc_list: Optional[list] = None, prime_bit_len: Optional[int] = None,
+                 ret_state_index: Optional[int] = 1):
         """
 
         :param int p: The prime field modulus.
@@ -59,6 +60,12 @@ class Poseidon:
 
         if 2 ** self.security_level > self.p ** self.t:
             print("Not secure")
+
+        if not (0 <= ret_state_index < self.t):
+            print("Invalid ret_state_index")
+            exit(1)
+
+        self.ret_state_index = ret_state_index
 
         print("Initialize Round Numbers")
         if (full_round is not None) & (partial_round is not None):
@@ -138,7 +145,7 @@ class Poseidon:
         # Last full rounds
         self.full_rounds()
 
-        return self.state[1]
+        return self.state[self.ret_state_index]
 
 
 class OptimizedPoseidon(Poseidon):
