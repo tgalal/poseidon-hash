@@ -18,7 +18,9 @@ class Poseidon:
     def __init__(self, p, security_level, alpha, input_rate, t, full_round: Optional[int] = None,
                  partial_round: Optional[int] = None, mds_matrix: Optional[list] = None,
                  rc_list: Optional[list] = None, prime_bit_len: Optional[int] = None,
-                 ret_state_index: Optional[int] = 1):
+                 ret_state_index: Optional[int] = 1,
+                 pad_input_left: Optional[int] = False
+                 ):
         """
 
         :param int p: The prime field modulus.
@@ -41,6 +43,7 @@ class Poseidon:
         """
         self.p = p
         self.security_level = security_level
+        self.pad_input_left = pad_input_left
 
         # TODO: For now alpha is fixed parameter
         if np.gcd(np.ulonglong(alpha), p - 1) == 1:
@@ -132,7 +135,10 @@ class Poseidon:
         :return:
         """
         if len(input_vec) < self.t:
-            input_vec.extend([0] * (self.t - len(input_vec)))
+            if self.pad_input_left:
+                input_vec = ([0] * (self.t - len(input_vec))) + input_vec
+            else:
+                input_vec.extend([0] * (self.t - len(input_vec)))
         self.state = self.field_p(input_vec)
         self.rc_counter = 0
 
