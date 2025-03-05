@@ -28,11 +28,12 @@ def case_neptune():
     return poseidon, t
 
 def case_circom(input_rate: int):
-    assert 0 < input_rate <= 6, "input_rate must be between 0 and 6"
+    partial_rounds = [56, 57, 56, 60, 60, 63, 64, 63, 60, 66, 60, 65, 70, 60, 64, 68]
+    assert 0 < input_rate <= len(partial_rounds),\
+        f"input_rate must be between 0 and {len(partial_rounds)}"
 
     security_level = 128
     t = input_rate + 1
-    partial_rounds = [56, 57, 56, 60, 60, 63, 64, 63];
     full_round = 8
     partial_round = partial_rounds[t - 2]
     alpha = 5
